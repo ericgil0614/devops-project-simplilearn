@@ -1,0 +1,32 @@
+- name: Launch EC2 instance
+  hosts: [add your ansible host names here]
+  vars:
+    name: "[name of the ec2 instance you want to create]"
+    aws_access_key: [your access key]
+    aws_secret_key: [your secret key]
+    region: [region of your choice]
+    image_id: [image of your choise]
+    instance_type: [your instance type]
+    key_name: "[your pem key name]"
+    subnet_id: [subnet id of your choice]
+    security_group: [your security group]
+    tags: {}
+  tasks:
+    - name: Launch EC2 instance
+      ec2_instance:
+        name: ec2-created-from-playbook
+        aws_access_key: "{{ aws_access_key }}"
+        aws_secret_key: "{{ aws_secret_key }}"
+        region: "{{ region }}"
+        image_id: "{{ image_id }}"
+        instance_type: "{{ instance_type }}"
+        key_name: "{{ key_name }}"
+        network:
+         assign_public_ip: true
+        subnet_id: "{{ subnet_id }}"
+        security_group: "{{ security_group }}"
+        count: "{{ count }}"
+      register: ec2_instance
+    - name: Print instance info
+      debug:
+        var: ec2_instance.instances
