@@ -10,6 +10,7 @@
     key_name: "[your pem key name]"
     subnet_id: [subnet id of your choice]
     security_group: [your security group]
+    count: 1
     tags: {}
   tasks:
     - name: Launch EC2 instance
