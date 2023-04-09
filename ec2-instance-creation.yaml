@@ -15,7 +15,7 @@
   tasks:
   - name: Launch EC2 instance
     ec2_instance:
-      name: ec2-created-from-playbook
+      name: "{{ name }}"
       aws_access_key: "{{ aws_access_key }}"
       aws_secret_key: "{{ aws_secret_key }}"
       region: "{{ region }}"
