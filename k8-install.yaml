@@ -1,0 +1,62 @@
+- hosts: [add hosts here]
+  become: true
+  # vars:
+  #   kube_version: "1.25.8"
+  tasks:
+  - name: Remove swapfile from /etc/fstab
+    mount:
+      name: "{{ item }}"
+      fstype: swap
+      state: absent
+    with_items:
+      - swap
+      - none
+
+  - name: Remove Swap entry from /etc/fstab.
+    lineinfile:
+      dest: /etc/fstab
+      regexp: swap
+      state: absent
+
+  - name: Add an apt signing key for Kubernetes
+    apt_key:
+      url: https://packages.cloud.google.com/apt/doc/apt-key.gpg
+      state: present
+
+  - name: Adding apt repository for Kubernetes
+    apt_repository:
+      repo: deb https://apt.kubernetes.io/ kubernetes-xenial main
+      state: present
+      filename: kubernetes.list
+
+  - name: Install Kubernetes binaries
+    apt:
+      name: "{{ packages }}"
+      state: present
+      update_cache: yes
+    vars:
+      packages:
+        - kubelet
+        - kubeadm
+        - kubectl
+
+  # - name: Install Kubernetes packages
+  #   apt:
+  #     name:
+  #       - kubelet={{ kube_version }}-00
+  #       - kubeadm={{ kube_version }}-00
+  #       - kubectl={{ kube_version }}-00
+  #     state: present
+  #     update_cache: yes
+  #     cache_valid_time: 86400
+  
+  - name: Enable service kubelet, and enable persistently
+    service:
+      name: kubelet
+      enabled: yes
+
+  - name: Restart kubelet
+    service:
+      name: kubelet
+      daemon_reload: yes
+      state: restarted
